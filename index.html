@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Carrier Pigeon Valentine</title>
+
+<style>
+body {
+  margin: 0;
+  font-family: "Comic Sans MS", Arial, sans-serif;
+  text-align: center;
+  overflow: hidden;
+  background: linear-gradient(#ffeedd, #cceeff);
+  height: 100vh;
+}
+
+/* Title */
+h1 {
+  margin-top: 20px;
+  color: #555;
+  position: relative;
+  z-index: 10;
+}
+
+/* Pigeon */
+.pigeon {
+  font-size: 80px;
+  display: block;
+  animation: flap 1.5s ease-in-out infinite;
+  position: relative;
+  z-index: 10;
+  transition: transform 2s ease, opacity 2s ease;
+}
+
+.pigeon.fly-away {
+  transform: translate(400px, -300px) scale(0.6);
+  opacity: 0;
+}
+
+@keyframes flap {
+  0%,100% { transform: rotate(0deg); }
+  25% { transform: rotate(5deg); }
+  75% { transform: rotate(-5deg); }
+}
+
+/* Pages */
+.page {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%) scale(0.95);
+  width: 80%;
+  max-width: 700px;
+  padding: 40px;
+  border-radius: 25px;
+  background: #fff3c4cc;
+  box-shadow: 0 5px 25px rgba(0,0,0,0.15);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.8s ease, transform 0.8s ease;
+  font-size: 20px;
+  line-height: 1.7;
+  z-index: 10;
+}
+
+.page.active {
+  opacity: 1;
+  transform: translate(-50%, -50%) scale(1);
+  pointer-events: auto;
+}
+
+/* Button */
+#nextBtn {
+  margin-top: 25px;
+  padding: 14px 28px;
+  font-size: 18px;
+  border-radius: 14px;
+  border: none;
+  background: #ffb347;
+  color: white;
+  cursor: pointer;
+  position: relative;
+  z-index: 10;
+}
+
+#nextBtn:hover { background: #ff944d; }
+
+/* Envelope */
+#envelopeBtn {
+  width: 160px;
+  height: 100px;
+  background: #fff8e7;
+  border: 2px solid #333;
+  border-radius: 12px;
+  position: relative;
+  cursor: pointer;
+  margin: 0 auto;
+}
+
+#envelopeBtn .flap {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 0;
+  height: 0;
+  border-left: 80px solid transparent;
+  border-right: 80px solid transparent;
+  border-top: 55px solid #ffd966;
+  transform-origin: top;
+  transition: transform 0.8s ease;
+}
+
+#envelopeBtn.open .flap {
+  transform: rotateX(180deg);
+}
+
+/* Sparkles */
+.sparkle {
+  position: absolute;
+  font-size: 20px;
+  animation: sparkle 1.2s ease-out forwards;
+  pointer-events: none;
+  z-index: 15;
+}
+
+@keyframes sparkle {
+  from { opacity: 1; transform: translateY(0) scale(1); }
+  to { opacity: 0; transform: translateY(-50px) scale(1.2); }
+}
+
+/* Bees */
+.bee {
+  position: absolute;
+  font-size: 24px;
+  pointer-events: none;
+}
+
+/* Hill */
+.hill {
+  position: absolute;
+  bottom: 0;
+  width: 200%;
+  height: 200px;
+  background: radial-gradient(circle at 50% 100%, #88cc88 0%, #559955 100%);
+  border-radius: 50% 50% 0 0;
+  left: -50%;
+  z-index: 1;
+}
+</style>
+</head>
+
+<body>
+
+<h1>Carrier Pigeon Delivery Service</h1>
+<div class="pigeon" id="pigeon">🕊️</div>
+<button id="nextBtn">Feed Pigeon</button>
+
+<div class="page" id="page1">
+  Early one morning, a tiny carrier pigeon clocked in for delivery duty.<br>
+  With a miniature envelope tucked under its wing, it took off with determination.
+</div>
+
+<div class="page" id="page2">
+  It zipped past rooftops and gardens, dodging a few busy bees along the way.<br>
+  The mission was important.
+</div>
+
+<div class="page" id="page3">
+  <p>Click the envelope to open it!</p>
+  <div id="envelopeBtn">
+    <div class="flap"></div>
+  </div>
+</div>
+
+<div class="page" id="message">
+  📨 <b>Message delivered:</b><br><br>
+  Will you be my Valentine my beautiful bee? 🐝💛
+</div>
+
+<div class="hill"></div>
+
+<script>
+const nextBtn = document.getElementById("nextBtn");
+const pages = [
+  document.getElementById("page1"),
+  document.getElementById("page2"),
+  document.getElementById("page3")
+];
+const envelope = document.getElementById("envelopeBtn");
+const message = document.getElementById("message");
+const pigeon = document.getElementById("pigeon");
+
+let currentPage = -1;
+
+function showPage(i) {
+  pages.forEach(p => p.classList.remove("active"));
+  pages[i].classList.add("active");
+}
+
+nextBtn.addEventListener("click", () => {
+  currentPage++;
+  if (currentPage < pages.length) showPage(currentPage);
+
+  if (currentPage === pages.length - 1) {
+    nextBtn.style.display = "none";
+    spawnBees();
+  }
+});
+
+/* Envelope open */
+envelope.addEventListener("click", () => {
+  envelope.classList.add("open");
+  spawnSparkles();
+
+  setTimeout(() => {
+    pages.forEach(p => p.classList.remove("active"));
+    message.classList.add("active");
+    pigeon.classList.add("fly-away");
+  }, 900);
+});
+
+/* Bees */
+function spawnBees() {
+  for (let i = 0; i < 5; i++) {
+    const bee = document.createElement("div");
+    bee.className = "bee";
+    bee.textContent = "🐝";
+    document.body.appendChild(bee);
+
+    let x = Math.random() * window.innerWidth;
+    let y = 260 + Math.random() * 40;
+    let a = Math.random() * Math.PI * 2;
+
+    function animate() {
+      a += 0.05;
+      bee.style.left = x + Math.cos(a) * 40 + "px";
+      bee.style.top = y + Math.sin(a) * 30 + "px";
+      requestAnimationFrame(animate);
+    }
+    animate();
+  }
+}
+
+/* Sparkles */
+function spawnSparkles() {
+  for (let i = 0; i < 8; i++) {
+    const s = document.createElement("div");
+    s.className = "sparkle";
+    s.textContent = "✨";
+    s.style.left = window.innerWidth / 2 + (Math.random() * 120 - 60) + "px";
+    s.style.top = "260px";
+    document.body.appendChild(s);
+    setTimeout(() => s.remove(), 1200);
+  }
+}
+</script>
+
+</body>
+</html>
